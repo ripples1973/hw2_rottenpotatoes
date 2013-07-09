@@ -31,18 +31,22 @@ class MoviesController < ApplicationController
         @ratings = @all_ratings
       else
         @ratings = session[:ratings]
+        # now do redirect
+        params[:ratings] = @ratings
+        flash.keep
+        redirect_to :sort => sort, :ratings => @ratings
       end
     else
-      @ratings = params[:ratings].keys()
+      @ratings = params[:ratings]
       session[:ratings] = @ratings
     end
       
     if sort == nil then
-      @movies = Movie.where("rating in (?)", @ratings)
+      @movies = Movie.where("rating in (?)", @ratings.keys())
       @hilite_title = nil
       @hilite_release_date = nil
     else
-        @movies = Movie.where("rating in (?)", @ratings).order(sort)
+        @movies = Movie.where("rating in (?)", @ratings.keys()).order(sort)
         if sort == 'title' then
           @hilite_title = 'hilite'
           @hilite_release_date = nil
